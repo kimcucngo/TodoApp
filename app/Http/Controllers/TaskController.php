@@ -11,20 +11,24 @@ use Illuminate\Http\Response;
 class TaskController extends Controller
 {
     /**
-     * Return Task list 
-     * @return Illuminate\Database\Eloquent\Collection
+     * Task一覧
+     * @return Task[]\Illuminate\Database\Eloquent\Collection
      */
     public function index()
     {
-        return Task::orderByDesc('id')->get();
+        $tasks = Task::orderByDesc('id')->get();
+        return $tasks;
     }
-
     /**
-     * Store a newly created resource in storage.
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse 
      */
     public function store(StoreTaskRequest $request)
     {
-        //
+        $task = Task::create ($request->all());
+        return $task
+        ? response()->json($task,201)
+        : response()->json([],500);
     }
 
     /**
