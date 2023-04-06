@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Http\Requests\PostTaskRequest;
 use Illuminate\Http\Response;
 
 class TaskController extends Controller
@@ -21,12 +22,13 @@ class TaskController extends Controller
         return $tasks;
     }
     /**
-     * @param Request $request
+     * @param PostTaskRequest $PostTaskRequest
      * @return \Illuminate\Http\JsonResponse 
      */
-    public function store(Request $request)
+    public function store(PostTaskRequest $request)
     {
-        $task = Task::create($request->all());
+        $validated = $request->validated();
+        $task = Task::create($validated);
         return $task
         ? response()->json($task,201)
         : response()->json([],500);
@@ -43,24 +45,21 @@ class TaskController extends Controller
     /**
      * @return \Illuminate\Http\JsonResponse 
      */
-    public function update(Request $request, Task $task)
+    public function update(PostTaskRequest $request, $id)
     {
-        $task -> title = $request -> title;
-
-        return $task -> update()
-        
-        ? response()->json($task)
+        return Task::find($id)->update([
+            'title' => $request->title,
+            'is_done' =>  $request->is_done
+        ])  
+        ? response()->json(Task::find($id)->get())
         : response()->json([],500);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Task $task)
+    public function destroy($id)
     {
-        return $task -> delete()
-        
-        ? response()->json($task)
-        : response()->json([],500);
+        Task::find($id)->delete();
     }
 }

@@ -17,14 +17,9 @@ class TaskTest extends TestCase
     {
         $tasks = Task::factory()->count(10)->create();
 
-        // dd($tasks->toArray());
-
         $response = $this->getJson('api/tasks');
-
-        // dd($response->json());
         
         $response->assertOk();
-                //  ->assertjsonCount($tasks->count());
     }
     public function test_register(): void
     {
@@ -35,30 +30,25 @@ class TaskTest extends TestCase
         $response = $this->postJson('api/tasks',$data);
 
         $response->assertStatus(201);
-
-        // dd($response->json());
         
         $response->assertCreated()
                  ->assertJsonFragment($data);
     }
-    public function test_update(Request $request,): void
+    public function test_update(): void
     {
         $task = Task::factory() -> create();
-        $task -> title = 'change';  
-        
-        $response = $this -> patchJson("api/Task/{$task -> id}",$task -> toArray());
-
-        dd($response -> Json());
-    //     $response -> assertCrated()
-    //               -> assertJsonFragment($data);
+        $task -> title = 'charge';      
+        $response = $this -> patchJson('api/task/'.$task->id,$task->toArray());
+       
+        $response->assertStatus(200);
     }
-    // public function test_delete(): void
-    // {
-    //     $task = Task::factory()->count(10)->create();
+    public function test_delete(): void
+    {
+        $task = Task::factory()->create();
 
-    //     $response = $this -> deleteJson("api/tasks/1");
+        $response = $this->deleteJson('api/task/'.$task->id);
         
-    //     $response 
-    //         -> assertOk();
-    // }
+        $response 
+            ->assertStatus(200);
+    }
 }
